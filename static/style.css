@@ -1,0 +1,85 @@
+body {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+}
+
+.container {
+    padding-top: 40px;
+}
+
+h1 {
+    margin-bottom: 30px;
+}
+
+.status-box {
+    background: #1f2937;
+    display: inline-block;
+    padding: 20px 40px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.status-title {
+    font-size: 14px;
+    color: #9ca3af;
+}
+
+.status-text {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 5px;
+    color: #22c55e;
+    transition: 0.3s;
+}
+
+.control-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 90px);
+    grid-template-rows: repeat(3, 90px);
+    gap: 15px;
+    justify-content: center;
+}
+
+button {
+    font-size: 28px;
+    border-radius: 15px;
+    border: none;
+    background: #1f2937;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+button:hover {
+    background: #374151;
+}
+
+button:active {
+    transform: scale(0.9);
+}
+
+button.active {
+    background: #2563eb;
+    box-shadow: 0 0 15px #2563eb;
+}
+
+.stop {
+    background: #dc2626;
+}
+
+.stop.active {
+    background: #ef4444;
+    box-shadow: 0 0 15px #ef4444;
+}
+
+.speed-control {
+    margin-top: 30px;
+}
+
+input[type="range"] {
+    width: 200px;
+}
