@@ -4,49 +4,62 @@ import atexit
 
 app = Flask(__name__)
 
+
+# ======================
+# Main Page
+# ======================
 @app.route("/")
 def index():
     return render_template("index.html")
 
 
+# ======================
+# Movement Routes
+# ======================
 @app.route("/forward")
 def forward():
     motors.forward()
-    return jsonify({"status": "forward"})
+    return jsonify({"action": "MOVING FORWARD"})
 
 
 @app.route("/backward")
 def backward():
     motors.backward()
-    return jsonify({"status": "backward"})
+    return jsonify({"action": "MOVING BACKWARD"})
 
 
 @app.route("/left")
 def left():
     motors.left()
-    return jsonify({"status": "left"})
+    return jsonify({"action": "TURNING LEFT"})
 
 
 @app.route("/right")
 def right():
     motors.right()
-    return jsonify({"status": "right"})
+    return jsonify({"action": "TURNING RIGHT"})
 
 
 @app.route("/stop")
 def stop():
     motors.stop()
-    return jsonify({"status": "stop"})
+    return jsonify({"action": "STOPPED"})
 
 
+# ======================
+# Speed Control (You forgot this route)
+# ======================
 @app.route("/speed", methods=["POST"])
 def set_speed():
-    value = float(request.json["speed"])
-    motors.set_speed(value)
-    return jsonify({"status": "speed set"})
+    data = request.get_json()
+    speed = float(data.get("speed", 0.6))
+    motors.set_speed(speed)
+    return jsonify({"status": "Speed Updated"})
 
 
-# Safety: Stop motors when program exits
+# ======================
+# Safety Shutdown
+# ======================
 def cleanup():
     motors.stop()
 

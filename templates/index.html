@@ -1,36 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedPal Robot Control</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-<div class="container">
+<div class="main-container">
 
-    <h1>🤖 MedPal Robot</h1>
+    <header>
+        <h1>🤖 MedPal Robot</h1>
+        <div id="connectionStatus" class="status-connection">● CONNECTED</div>
+    </header>
 
-    <div class="status-box">
-        <div class="status-title">Current Action</div>
-        <div id="statusText" class="status-text">READY</div>
-    </div>
+    <section class="status-section">
+        <div class="status-box">
+            <div class="status-label">Current Action</div>
+            <div id="statusText" class="status-value">READY</div>
+        </div>
 
-    <div class="control-pad">
-        <button id="btn-forward" onclick="sendCommand('forward')">▲</button>
-        <button id="btn-left" onclick="sendCommand('left')">◀</button>
-        <button id="btn-stop" class="stop" onclick="sendCommand('stop')">STOP</button>
-        <button id="btn-right" onclick="sendCommand('right')">▶</button>
-        <button id="btn-backward" onclick="sendCommand('backward')">▼</button>
-    </div>
+        <div id="directionIcon" class="direction-icon">⏹</div>
+    </section>
 
-    <div class="speed-control">
-        <label>Speed</label>
-        <input type="range" min="0.2" max="1" step="0.1" value="0.6"
-               oninput="setSpeed(this.value)">
-    </div>
+    <section class="control-section">
+        <div class="control-pad">
+            <button id="btn-forward" onclick="sendCommand('forward')">▲</button>
+            <button id="btn-left" onclick="sendCommand('left')">◀</button>
+            <button id="btn-stop" class="stop-btn" onclick="sendCommand('stop')">STOP</button>
+            <button id="btn-right" onclick="sendCommand('right')">▶</button>
+            <button id="btn-backward" onclick="sendCommand('backward')">▼</button>
+        </div>
+    </section>
+
+    <section class="speed-section">
+        <label>Speed: <span id="speedValue">0.6</span></label>
+        <input type="range" id="speedSlider" min="0.2" max="1" step="0.1" value="0.6"
+               oninput="updateSpeed(this.value)">
+    </section>
 
 </div>
 
-<script src="/static/script.js"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
 </body>
 </html>

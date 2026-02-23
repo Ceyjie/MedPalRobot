@@ -6,28 +6,44 @@ function sendCommand(action) {
         .then(res => res.json())
         .then(data => {
 
-            updateStatus(action);
+            updateStatus(data.action);
             highlightButton(action);
+            updateIcon(action);
+
+            document.getElementById("connectionStatus").className = "status-connection";
+            document.getElementById("connectionStatus").innerText = "● CONNECTED";
 
         })
         .catch(() => {
-            document.getElementById("statusText").innerText = "ERROR";
-            document.getElementById("statusText").style.color = "red";
+            document.getElementById("connectionStatus").className = "status-connection offline";
+            document.getElementById("connectionStatus").innerText = "● DISCONNECTED";
         });
 }
 
-function updateStatus(action) {
+function updateStatus(text) {
+    const stat = document.getElementById("statusText");
+    stat.innerText = text;
+}
 
-    let text = action.toUpperCase();
+function updateIcon(action) {
+    const icon = document.getElementById("directionIcon");
 
-    if (action === "stop") {
-        text = "STOPPED";
-        document.getElementById("statusText").style.color = "#ef4444";
-    } else {
-        document.getElementById("statusText").style.color = "#22c55e";
+    switch (action) {
+        case "forward":
+            icon.innerText = "▲";
+            break;
+        case "backward":
+            icon.innerText = "▼";
+            break;
+        case "left":
+            icon.innerText = "◀";
+            break;
+        case "right":
+            icon.innerText = "▶";
+            break;
+        default:
+            icon.innerText = "⏹";
     }
-
-    document.getElementById("statusText").innerText = text;
 }
 
 function highlightButton(action) {
@@ -43,7 +59,9 @@ function highlightButton(action) {
     }
 }
 
-function setSpeed(value) {
+function updateSpeed(value) {
+    document.getElementById("speedValue").innerText = value;
+
     fetch("/speed", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
