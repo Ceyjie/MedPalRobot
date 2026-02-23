@@ -24,7 +24,7 @@
         <div id="directionIcon" class="direction-icon">⏹</div>
     </section>
 
-    <section class="control-section">
+        <section class="control-section">
         <div class="control-pad">
             <button id="btn-forward" onclick="sendCommand('forward')">▲</button>
             <button id="btn-left" onclick="sendCommand('left')">◀</button>
@@ -32,12 +32,13 @@
             <button id="btn-right" onclick="sendCommand('right')">▶</button>
             <button id="btn-backward" onclick="sendCommand('backward')">▼</button>
         </div>
-    </section>
-
-    <section class="speed-section">
-        <label>Speed: <span id="speedValue">0.6</span></label>
-        <input type="range" id="speedSlider" min="0.2" max="1" step="0.1" value="0.6"
-               oninput="updateSpeed(this.value)">
+        
+        <!-- YOUR TEST BUTTON - now perfectly placed below the arrows -->
+        <div style="text-align: center; margin: 25px 0;">
+            <a href="/test_led" class="btn" style="padding: 15px 35px; font-size: 18px; width: 90%; max-width: 380px; display: inline-block;">
+                🔍 Test Motor Pins with LED (SAFE)
+            </a>
+        </div>
     </section>
 
 </div>

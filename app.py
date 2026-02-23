@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import motor_control as motors
 import atexit
+from motor_control import test_motor_pins_with_led
 
 app = Flask(__name__)
 
@@ -55,6 +56,13 @@ def set_speed():
     speed = float(data.get("speed", 0.6))
     motors.set_speed(speed)
     return jsonify({"status": "Speed Updated"})
+
+#Test LED
+@app.route('/test_led')
+def test_led():
+    test_motor_pins_with_led()   # calls the function you just added
+    return "✅ LED motor pin test completed! Check terminal for results."
+
 
 
 # ======================
