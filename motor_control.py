@@ -1,88 +1,120 @@
-from gpiozero import PWMOutputDevice
+from gpiozero import PWMOutputDevice, DigitalOutputDevice
+import config
+import atexit
+
+# =========================
+# GLOBAL STATE
+# =========================
+current_speed = config.DEFAULT_SPEED
+
+# =========================
+# Motor Setup
+# =========================
+
+from gpiozero import DigitalOutputDevice
 import config
 
+# Setup enable pins
+right_enable = DigitalOutputDevice(config.RIGHT_REN)
+left_enable  = DigitalOutputDevice(config.LEFT_LEN)
 
-# Left side driver
-LEFT_R = PWMOutputDevice(config.LEFT_RPWM, frequency=config.PWM_FREQ)
-LEFT_L = PWMOutputDevice(config.LEFT_LPWM, frequency=config.PWM_FREQ)
+# Turn them ON
+right_enable.on()   # R_EN HIGH → right motor enabled
+left_enable.on()    # L_EN HIGH → left motor enabled
 
-# Right side driver
-RIGHT_R = PWMOutputDevice(config.RIGHT_RPWM, frequency=config.PWM_FREQ)
-RIGHT_L = PWMOutputDevice(config.RIGHT_LPWM, frequency=config.PWM_FREQ)
+# Turn them OFF
+right_enable.off()  # R_EN LOW → right motor disabled
+left_enable.off()   # L_EN LOW → left motor disabled
 
-speed = config.DEFAULT_SPEED
+left_rpwm = PWMOutputDevice(config.LEFT_RPWM, frequency=config.PWM_FREQ)
+left_lpwm = PWMOutputDevice(config.LEFT_LPWM, frequency=config.PWM_FREQ)
+left_ren = DigitalOutputDevice(config.LEFT_REN)
+left_len = DigitalOutputDevice(config.LEFT_LEN)
 
+right_rpwm = PWMOutputDevice(config.RIGHT_RPWM, frequency=config.PWM_FREQ)
+right_lpwm = PWMOutputDevice(config.RIGHT_LPWM, frequency=config.PWM_FREQ)
+right_ren = DigitalOutputDevice(config.RIGHT_REN)
+right_len = DigitalOutputDevice(config.RIGHT_LEN)
 
-def set_speed(value):
-    global speed
-    speed = float(value)
+# =========================
+# Enable Motors
+# =========================
 
+def enable_motors():
+    left_ren.on()
+    left_len.on()
+    right_ren.on()
+    right_len.on()
+
+def disable_motors():
+    left_ren.off()
+    left_len.off()
+    right_ren.off()
+    right_len.off()
+
+enable_motors()
+
+# =========================
+# Speed Control
+# =========================
+
+def set_speed(speed):
+    global current_speed
+    speed = float(speed)
+
+    if speed < 0:
+        speed = 0
+    if speed > 1:
+        speed = 1
+
+    current_speed = speed
+    print(f"⚡ Speed set to {current_speed}")
+    return current_speed
+
+def get_speed():
+    return current_speed
+
+# =========================
+# Movement
+# =========================
 
 def stop():
-    LEFT_R.value = 0
-    LEFT_L.value = 0
-    RIGHT_R.value = 0
-    RIGHT_L.value = 0
-
+    left_rpwm.value = 0
+    left_lpwm.value = 0
+    right_rpwm.value = 0
+    right_lpwm.value = 0
 
 def forward():
     stop()
-    LEFT_R.value = speed
-    RIGHT_R.value = speed
-
+    left_rpwm.value = current_speed
+    right_rpwm.value = current_speed
 
 def backward():
     stop()
-    LEFT_L.value = speed
-    RIGHT_L.value = speed
-
+    left_lpwm.value = current_speed
+    right_lpwm.value = current_speed
 
 def left():
     stop()
-    LEFT_L.value = speed
-    RIGHT_R.value = speed
-
+    left_lpwm.value = current_speed
+    right_rpwm.value = current_speed
 
 def right():
     stop()
-    LEFT_R.value = speed
-    RIGHT_L.value = speed
+    left_rpwm.value = current_speed
+    right_lpwm.value = current_speed
 
-#-------------------------------------------------------------
+# =========================
+# Cleanup
+# =========================
 
+def cleanup():
+    stop()
+    disable_motors()
 
-from time import sleep
+atexit.register(cleanup)
 
-# ================== YOUR SAFE LED MOTOR PIN TEST (100% FIXED) ==================
-def test_motor_pins_with_led():
-    print("🚀 MedPalRobot - LED TEST using YOUR pins (GPIO 12,13,18,19)")
-    print("Make sure 4 LEDs + 220Ω resistors are connected BEFORE running!")
-    
-    # Forward
-    print("→ Forward (LEDs on GPIO12 + GPIO18 should light)")
-    LEFT_R.value = 0.7
-    RIGHT_R.value = 0.7
-    sleep(2)
-    
-    # Backward
-    print("← Backward (LEDs on GPIO13 + GPIO19 should light)")
-    LEFT_L.value = 0.7
-    RIGHT_L.value = 0.7
-    sleep(2)
-    
-    # Left turn
-    print("↺ Left Turn (GPIO13 + GPIO18)")
-    LEFT_L.value = 0.7
-    RIGHT_R.value = 0.7
-    sleep(2)
-    
-    # Right turn
-    print("↻ Right Turn (GPIO12 + GPIO19)")
-    LEFT_R.value = 0.7
-    RIGHT_L.value = 0.7
-    sleep(2)
-    
-    # Stop
-    print("⏹ STOP - All LEDs OFF")
-    stop()   # your existing stop function
-    print("✅ LED test finished! Pins are correct → now connect BTS7960 safely.")
+stop()
+print("🤖 Motor Control Initialized")
+print(f"PWM Frequency: {config.PWM_FREQ}Hz")
+print(f"Default Speed: {current_speed}")

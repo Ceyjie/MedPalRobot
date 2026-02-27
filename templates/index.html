@@ -25,6 +25,11 @@
     </section>
 
         <section class="control-section">
+<div style="margin-top:20px;">
+    <label>Speed:</label>
+    <input type="range" min="0" max="100" value="60" id="speedSlider">
+    <span id="speedValue">60%</span>
+</div>
         <div class="control-pad">
             <button id="btn-forward" onclick="sendCommand('forward')">▲</button>
             <button id="btn-left" onclick="sendCommand('left')">◀</button>
@@ -32,16 +37,49 @@
             <button id="btn-right" onclick="sendCommand('right')">▶</button>
             <button id="btn-backward" onclick="sendCommand('backward')">▼</button>
         </div>
-        
-        <!-- YOUR TEST BUTTON - now perfectly placed below the arrows -->
-        <div style="text-align: center; margin: 25px 0;">
-            <a href="/test_led" class="btn" style="padding: 15px 35px; font-size: 18px; width: 90%; max-width: 380px; display: inline-block;">
-                🔍 Test Motor Pins with LED (SAFE)
-            </a>
-        </div>
+<!-- Replace your existing test button section with this: -->
+<div style="text-align: center; margin: 25px 0;">
+    <a href="/test_led" class="btn" style="padding: 15px 35px; font-size: 18px; width: 90%; max-width: 380px; display: inline-block; margin-bottom: 10px;">
+        🔍 Quick LED Terminal Test
+    </a>
+    
+    <!-- NEW: Link to full LED test page -->
+    <a href="/led_test_page" class="btn" style="padding: 15px 35px; font-size: 18px; width: 90%; max-width: 380px; display: inline-block; background: #3b82f6;">
+        💡 Interactive LED Control Panel
+    </a>
+</div>
     </section>
 
-</div>
+<script>
+const slider = document.getElementById("speedSlider");
+const speedValue = document.getElementById("speedValue");
+
+let debounceTimer = null;
+
+// Load speed from backend
+window.addEventListener("DOMContentLoaded", () => {
+    fetch("/get_speed")
+        .then(res => res.json())
+        .then(data => {
+            let percent = Math.round(data.speed * 100);
+            slider.value = percent;
+            speedValue.innerHTML = percent + "%";
+        });
+});
+
+// Debounced update
+slider.addEventListener("input", function() {
+    let percent = this.value;
+    speedValue.innerHTML = percent + "%";
+
+    clearTimeout(debounceTimer);
+
+    debounceTimer = setTimeout(() => {
+        let speed = percent / 100;
+        fetch("/set_speed/" + speed);
+    }, 100);
+});
+</script>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 

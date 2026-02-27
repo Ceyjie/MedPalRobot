@@ -68,3 +68,12 @@ function updateSpeed(value) {
         body: JSON.stringify({ speed: value })
     });
 }
+
+function exitLEDMode() {
+    fetch('/led/mode/exit')
+        .then(res => res.json())
+        .then(data => {
+            alert('Returning to motor control mode');
+            window.location.href = '/';
+        });
+}

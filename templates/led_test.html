@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedPal LED Test Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Additional styles for LED test page */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            text-align: center;
+        }
+
+        .main-container {
+            padding: 30px;
+            max-width: 480px;
+            margin: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 26px;
+            color: #58a6ff;
+            margin: 0;
+        }
+
+        .status-connection {
+            font-size: 14px;
+            font-weight: bold;
+            color: #22c55e;
+        }
+
+        .status-connection.offline {
+            color: #f85149;
+        }
+
+        .status-section {
+            background: #161b22;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-box {
+            text-align: left;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        .status-value {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 6px;
+            color: #79c0ff;
+        }
+
+        .direction-icon {
+            font-size: 36px;
+            color: #79c0ff;
+        }
+
+        /* Mode indicator */
+        .mode-indicator {
+            background: #161b22;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #22c55e;
+        }
+
+        .mode-text {
+            font-size: 16px;
+            font-weight: bold;
+            color: #22c55e;
+        }
+
+        .exit-btn {
+            background: #f85149;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .exit-btn:hover {
+            background: #ff7b72;
+        }
+
+        /* LED Indicators Grid - 4 LEDs in a row */
+        .led-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin: 30px 0;
+            padding: 20px;
+            background: #161b22;
+            border-radius: 12px;
+        }
+
+        .led-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .led-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            background: #2d2d3a;
+            transition: all 0.3s ease;
+            border: 2px solid #30363d;
+        }
+
+        .led-indicator.on {
+            background: #ff4444;
+            box-shadow: 0 0 20px #ff4444;
+        }
+
+        .led-label {
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        .led-pin {
+            font-size: 10px;
+            color: #58a6ff;
+        }
+
+        /* Control Pad - Same 5-button layout as main page */
+        .control-section {
+            margin-bottom: 30px;
+        }
+
+        .control-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 90px);
+            grid-template-rows: repeat(3, 90px);
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        button {
+            font-size: 28px;
+            width: 90px;
+            height: 90px;
+            border-radius: 12px;
+            border: none;
+            background: #21262d;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        button:hover {
+            background: #30353f;
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        button.active {
+            background: #58a6ff;
+            box-shadow: 0 0 12px #58a6ff;
+        }
+
+        .stop-btn {
+            background: #f85149;
+        }
+
+        .stop-btn.active {
+            background: #ff7b72;
+        }
+
+        /* Pattern buttons */
+        .pattern-section {
+            background: #161b22;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .pattern-title {
+            font-size: 16px;
+            color: #8b949e;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .pattern-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .pattern-btn {
+            width: auto;
+            height: auto;
+            padding: 12px 5px;
+            font-size: 14px;
+            background: #21262d;
+        }
+
+        .pattern-btn:hover {
+            background: #58a6ff;
+        }
+
+        /* Navigation */
+        .nav-links {
+            margin-top: 30px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .nav-link {
+            color: #58a6ff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 1px solid #58a6ff;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover {
+            background: #58a6ff;
+            color: #0d1117;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #161b22;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border-left: 4px solid #58a6ff;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translate(-50%, 100%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Quick test button */
+        .quick-test {
+            background: #21262d;
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .quick-test:hover {
+            background: #58a6ff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <header>
+        <h1>💡 MedPal LED Test</h1>
+        <div id="connectionStatus" class="status-connection">● CONNECTED</div>
+    </header>
+
+    <!-- Mode Indicator -->
+    <div class="mode-indicator">
+        <span class="mode-text">🔵 LED TEST MODE</span>
+        <button class="exit-btn" onclick="exitLEDMode()">EXIT</button>
+    </div>
+
+    <!-- Status Section -->
+    <section class="status-section">
+        <div class="status-box">
+            <div class="status-label">Current LED Pattern</div>
+            <div id="statusText" class="status-value">READY</div>
+        </div>
+        <div id="directionIcon" class="direction-icon">💡</div>
+    </section>
+
+    <!-- LED Status Indicators -->
+    <div class="led-row">
+        <div class="led-item">
+            <div class="led-indicator" id="led-front-left"></div>
+            <div class="led-label">FRONT LEFT</div>
+            <div class="led-pin">GPIO12</div>
+        </div>
+        <div class="led-item">
+            <div class="led-indicator" id="led-front-right"></div>
+            <div class="led-label">FRONT RIGHT</div>
+            <div class="led-pin">GPIO18</div>
+        </div>
+        <div class="led-item">
+            <div class="led-indicator" id="led-back-left"></div>
+            <div class="led-label">BACK LEFT</div>
+            <div class="led-pin">GPIO13</div>
+        </div>
+        <div class="led-item">
+            <div class="led-indicator" id="led-back-right"></div>
+            <div class="led-label">BACK RIGHT</div>
+            <div class="led-pin">GPIO19</div>
+        </div>
+    </div>
+
+    <!-- Main Control Pad - Same 5-button layout as main page -->
+    <section class="control-section">
+        <div class="control-pad">
+            <button id="btn-forward" onclick="testPattern('forward')">▲</button>
+            <button id="btn-left" onclick="testPattern('left')">◀</button>
+            <button id="btn-stop" class="stop-btn" onclick="testPattern('stop')">STOP</button>
+            <button id="btn-right" onclick="testPattern('right')">▶</button>
+            <button id="btn-backward" onclick="testPattern('backward')">▼</button>
+        </div>
+        
+        <!-- Button labels for clarity -->
+        <div style="display: flex; justify-content: center; gap: 30px; margin-top: -15px; margin-bottom: 20px; color: #8b949e; font-size: 12px;">
+            <span>FORWARD</span>
+            <span>LEFT</span>
+            <span>STOP</span>
+            <span>RIGHT</span>
+            <span>BACK</span>
+        </div>
+    </section>
+
+    <!-- LED Pattern Tests -->
+    <div class="pattern-section">
+        <div class="pattern-title">✨ ADDITIONAL LED PATTERNS</div>
+        <div class="pattern-buttons">
+            <button class="pattern-btn" onclick="runPattern('chase')">🏃 CHASE</button>
+            <button class="pattern-btn" onclick="runPattern('alternate')">🔄 ALT</button>
+            <button class="pattern-btn" onclick="runPattern('all_blink')">👁️ BLINK</button>
+            <button class="pattern-btn" onclick="runPattern('knight_rider')">⚡ KNIGHT</button>
+            <button class="pattern-btn" onclick="runPattern('police')">🚨 POLICE</button>
+            <button class="pattern-btn" onclick="allLEDsOff()">⏹️ ALL OFF</button>
+        </div>
+    </div>
+
+    <!-- Quick Test Button -->
+    <div class="quick-test" onclick="runQuickTest()">
+        🔍 RUN QUICK LED TEST (tests all pins)
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-links">
+        <a href="/" class="nav-link">← BACK TO CONTROL</a>
+        <a href="/test_led" class="nav-link" target="_blank">📟 TERMINAL TEST</a>
+    </div>
+</div>
+
+<script>
+    // Current LED states
+    let currentLEDState = {
+        'front_left': false,
+        'front_right': false,
+        'back_left': false,
+        'back_right': false
+    };
+
+    let currentButton = null;
+    let testInProgress = false;
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        checkConnection();
+        // Enter LED mode automatically
+        enterLEDMode();
+    });
+
+    // Enter LED test mode
+    function enterLEDMode() {
+        fetch('/led/mode/enter')
+            .then(res => res.json())
+            .then(data => {
+                console.log('LED mode activated');
+            })
+            .catch(error => {
+                console.error('Error entering LED mode:', error);
+            });
+    }
+
+    // Exit LED mode and return to motor control
+    function exitLEDMode() {
+        const exitBtn = document.querySelector('.exit-btn');
+        exitBtn.innerHTML = '<span class="spinner"></span>';
+        exitBtn.disabled = true;
+        
+        fetch('/led/mode/exit')
+            .then(res => res.json())
+            .then(data => {
+                showToast('Returning to motor control');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Failed to exit', 'error');
+                exitBtn.innerHTML = 'EXIT';
+                exitBtn.disabled = false;
+            });
+    }
+
+    // Test pattern (called by main buttons)
+    function testPattern(pattern) {
+        if (testInProgress) {
+            showToast('Test in progress...', 'warning');
+            return;
+        }
+
+        // Highlight button
+        highlightButton(pattern);
+        
+        // Update icon
+        updateIcon(pattern);
+        
+        // Run the pattern
+        switch(pattern) {
+            case 'forward':
+                runPattern('forward_test');
+                break;
+            case 'backward':
+                runPattern('backward_test');
+                break;
+            case 'left':
+                runPattern('left_test');
+                break;
+            case 'right':
+                runPattern('right_test');
+                break;
+            case 'stop':
+                allLEDsOff();
+                break;
+        }
+    }
+
+    // Run LED pattern
+    function runPattern(pattern) {
+        if (testInProgress && pattern !== 'stop') {
+            showToast('Please wait for current test to finish', 'warning');
+            return;
+        }
+        
+        testInProgress = true;
+        updateStatus(pattern.toUpperCase().replace('_', ' '));
+        showToast(`Running ${pattern} pattern...`);
+        
+        fetch(`/led/pattern/${pattern}`)
+            .then(res => res.json())
+            .then(data => {
+                updateStatus('READY');
+                showToast('Pattern completed!');
+                // Refresh LED indicators
+                setTimeout(refreshLEDStates, 500);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                updateStatus('ERROR');
+                showToast('Pattern failed', 'error');
+            })
+            .finally(() => {
+                testInProgress = false;
+            });
+    }
+
+    // Run quick test (comprehensive)
+    function runQuickTest() {
+        if (testInProgress) {
+            showToast('Test already in progress', 'warning');
+            return;
+        }
+        
+        showToast('Starting quick LED test...');
+        updateStatus('TESTING ALL PINS');
+        
+        // Sequence through all patterns
+        const patterns = ['forward_test', 'backward_test', 'left_test', 'right_test', 'chase'];
+        let index = 0;
+        
+        function runNext() {
+            if (index >= patterns.length) {
+                allLEDsOff();
+                updateStatus('TEST COMPLETE');
+                showToast('✅ Quick test finished!');
+                testInProgress = false;
+                return;
+            }
+            
+            fetch(`/led/pattern/${patterns[index]}`)
+                .then(() => {
+                    index++;
+                    setTimeout(runNext, 2000);
+                });
+        }
+        
+        testInProgress = true;
+        runNext();
+    }
+
+// All LEDs off
+function allLEDsOff() {
+    fetch('/led/off_all')
+        .then(res => res.json())
+        .then(data => {
+            updateAllIndicators(false);
+            updateStatus('ALL LEDs OFF');
+            showToast('All LEDs turned off');
+            highlightButton('stop');
+            
+            // Also update the LED indicators
+            document.querySelectorAll('.led-indicator').forEach(ind => {
+                ind.classList.remove('on');
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Failed to turn off LEDs', 'error');
+            
+            // Try alternative endpoint
+            fetch('/led/off_all_leds')
+                .catch(e => console.log('Alternative also failed'));
+        });
+}
+
+    // Check connection
+    function checkConnection() {
+        fetch('/')
+            .then(res => {
+                document.getElementById("connectionStatus").className = "status-connection";
+                document.getElementById("connectionStatus").innerText = "● CONNECTED";
+            })
+            .catch(() => {
+                document.getElementById("connectionStatus").className = "status-connection offline";
+                document.getElementById("connectionStatus").innerText = "● DISCONNECTED";
+            });
+    }
+
+    // Update status text
+    function updateStatus(text) {
+        document.getElementById("statusText").innerText = text;
+    }
+
+    // Update direction icon
+    function updateIcon(action) {
+        const icon = document.getElementById("directionIcon");
+        switch (action) {
+            case 'forward':
+                icon.innerText = "▲";
+                break;
+            case 'backward':
+                icon.innerText = "▼";
+                break;
+            case 'left':
+                icon.innerText = "◀";
+                break;
+            case 'right':
+                icon.innerText = "▶";
+                break;
+            default:
+                icon.innerText = "💡";
+        }
+    }
+
+    // Highlight active button
+    function highlightButton(action) {
+        if (currentButton) {
+            currentButton.classList.remove("active");
+        }
+
+        const btn = document.getElementById("btn-" + action);
+        if (btn) {
+            btn.classList.add("active");
+            currentButton = btn;
+        }
+    }
+
+    // Update LED indicators
+    function updateLEDIndicator(led, state) {
+        const indicator = document.getElementById(`led-${led}`);
+        if (indicator) {
+            if (state) {
+                indicator.classList.add('on');
+            } else {
+                indicator.classList.remove('on');
+            }
+        }
+        currentLEDState[led] = state;
+    }
+
+    function updateAllIndicators(state) {
+        for (let led in currentLEDState) {
+            updateLEDIndicator(led, state);
+        }
+    }
+
+    // Refresh LED states from actual hardware
+    function refreshLEDStates() {
+        // This would need a backend route to get actual states
+        // For now, just visual feedback
+        showToast('States refreshed');
+    }
+
+    // Show toast notification
+    function showToast(message, type = 'info') {
+        const existingToast = document.querySelector('.toast');
+        if (existingToast) {
+            existingToast.remove();
+        }
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        
+        switch(type) {
+            case 'error':
+                toast.style.borderLeftColor = '#f85149';
+                break;
+            case 'warning':
+                toast.style.borderLeftColor = '#f0883e';
+                break;
+            default:
+                toast.style.borderLeftColor = '#58a6ff';
+        }
+        
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 2000);
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(event) {
+        if (event.target.tagName === 'INPUT') return;
+        
+        switch(event.key) {
+            case 'ArrowUp': testPattern('forward'); break;
+            case 'ArrowDown': testPattern('backward'); break;
+            case 'ArrowLeft': testPattern('left'); break;
+            case 'ArrowRight': testPattern('right'); break;
+            case ' ': // Spacebar
+                event.preventDefault();
+                testPattern('stop'); 
+                break;
+        }
+    });
+</script>
+
+</body>
+</html>

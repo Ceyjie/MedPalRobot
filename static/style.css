@@ -116,3 +116,17 @@ input[type="range"] {
     width: 100%;
     margin-top: 10px;
 }
+
+/* Add this for the new button style  from led test*/
+.btn {
+    background: #21262d;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    background: #58a6ff;
+    transform: scale(1.02);
+}
