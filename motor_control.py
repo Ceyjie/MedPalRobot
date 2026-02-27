@@ -11,33 +11,21 @@ current_speed = config.DEFAULT_SPEED
 # Motor Setup
 # =========================
 
-from gpiozero import DigitalOutputDevice
-import config
-
-# Setup enable pins
-right_enable = DigitalOutputDevice(config.RIGHT_REN)
-left_enable  = DigitalOutputDevice(config.LEFT_LEN)
-
-# Turn them ON
-right_enable.on()   # R_EN HIGH → right motor enabled
-left_enable.on()    # L_EN HIGH → left motor enabled
-
-# Turn them OFF
-right_enable.off()  # R_EN LOW → right motor disabled
-left_enable.off()   # L_EN LOW → left motor disabled
-
+# Initialize PWM Pins (Speed)
 left_rpwm = PWMOutputDevice(config.LEFT_RPWM, frequency=config.PWM_FREQ)
 left_lpwm = PWMOutputDevice(config.LEFT_LPWM, frequency=config.PWM_FREQ)
-left_ren = DigitalOutputDevice(config.LEFT_REN)
-left_len = DigitalOutputDevice(config.LEFT_LEN)
-
 right_rpwm = PWMOutputDevice(config.RIGHT_RPWM, frequency=config.PWM_FREQ)
 right_lpwm = PWMOutputDevice(config.RIGHT_LPWM, frequency=config.PWM_FREQ)
+
+# Initialize Digital Pins (Direction/Enable)
+# We define these ONLY ONCE here to prevent GPIOPinInUse error
+left_ren = DigitalOutputDevice(config.LEFT_REN)
+left_len = DigitalOutputDevice(config.LEFT_LEN)
 right_ren = DigitalOutputDevice(config.RIGHT_REN)
 right_len = DigitalOutputDevice(config.RIGHT_LEN)
 
 # =========================
-# Enable Motors
+# Enable/Disable Logic
 # =========================
 
 def enable_motors():
@@ -45,13 +33,16 @@ def enable_motors():
     left_len.on()
     right_ren.on()
     right_len.on()
+    print("✅ Hardware Pins Enabled")
 
 def disable_motors():
     left_ren.off()
     left_len.off()
     right_ren.off()
     right_len.off()
+    print("🛑 Hardware Pins Disabled")
 
+# Run enable at startup
 enable_motors()
 
 # =========================
@@ -60,22 +51,21 @@ enable_motors()
 
 def set_speed(speed):
     global current_speed
-    speed = float(speed)
-
-    if speed < 0:
-        speed = 0
-    if speed > 1:
-        speed = 1
-
-    current_speed = speed
-    print(f"⚡ Speed set to {current_speed}")
-    return current_speed
+    try:
+        speed = float(speed)
+        if speed < 0: speed = 0
+        if speed > 1: speed = 1
+        current_speed = speed
+        print(f"⚡ Speed set to {current_speed}")
+        return current_speed
+    except:
+        return current_speed
 
 def get_speed():
     return current_speed
 
 # =========================
-# Movement
+# Movement Functions
 # =========================
 
 def stop():
@@ -104,17 +94,8 @@ def right():
     left_rpwm.value = current_speed
     right_lpwm.value = current_speed
 
-# =========================
-# Cleanup
-# =========================
-
 def cleanup():
     stop()
     disable_motors()
 
 atexit.register(cleanup)
-
-stop()
-print("🤖 Motor Control Initialized")
-print(f"PWM Frequency: {config.PWM_FREQ}Hz")
-print(f"Default Speed: {current_speed}")

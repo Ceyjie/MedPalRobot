@@ -58,15 +58,16 @@ function highlightButton(action) {
         currentButton = btn;
     }
 }
-
+                                            
 function updateSpeed(value) {
-    document.getElementById("speedValue").innerText = value;
+    document.getElementById("speedValue").innerText = value + "%";
+    let decimalSpeed = value / 100;
 
-    fetch("/speed", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ speed: value })
-    });
+    // Corrected to match @app.route("/set_speed/<value>")
+    fetch("/set_speed/" + decimalSpeed)
+        .then(res => res.json())
+        .then(data => console.log("Speed set to:", data.speed))
+        .catch(err => console.error("Update failed:", err));
 }
 
 function exitLEDMode() {

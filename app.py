@@ -35,7 +35,8 @@ def stop():
 
 @app.route("/set_speed/<value>")
 def set_speed(value):
-    new_speed = motors.set_speed(float(value))
+    # Pass the value from the URL to motor_control
+    new_speed = motors.set_speed(value)
     return jsonify({"speed": new_speed})
 
 @app.route("/get_speed")
@@ -48,4 +49,5 @@ def cleanup():
 atexit.register(cleanup)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    # IMPORTANT: use_reloader=False prevents the double-start GPIO error
+    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
